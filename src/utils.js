@@ -10,3 +10,7 @@ export const loadTasks = async (path) => {
 		throw err;
 	}
 };
+
+export const getTasks = () => {
+
+}

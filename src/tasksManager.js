@@ -1,72 +1,40 @@
-import { log } from 'node:console';
-import { readFile, writeFile } from 'node:fs/promises';
+import { tasksService } from './tasksService.js';
 
 export const tasksManager = (() => {
-	let tasks = [];
-	const jsonPath = 'src/tasks.json';
+	const getTasks = (req) => {
+		return tasksService.getTasks();
+	}
 
-	const init = async () => {
-		try {
-			const content = await readFile(jsonPath, { encoding: 'utf8' });
-			tasks = JSON.parse(content);
-		} catch (err) {
-			console.error('Can not initialize Tasks:', err.message);
-			throw new Error('Can not initialize Tasks. Verify JSON file.');
-		}
-		return tasks;
+	const findTask = (req) => {
+		const { id } = req.params;
+		if (!id) return { error: 'Must pass an id' };
+		return tasksService.findTask(id);
 	};
 
-	const saveTasks = async () => {
-		try {
-			await writeFile(jsonPath, JSON.stringify(tasks, null, 3), 'utf8');
-		} catch (err) {
-			console.error('Can not save tasks', err.message);
-			throw new Error('Can not save tasks.');
-		}
+	const createTask = (req) => {
+		let { title, description } = req.body;
+		title = title.trim();
+		description = description.trim();
+		if (!title) return { error: 'Title cannot be empty!' };
+		if (!description) return { error: 'Description cannot be empty!' };
+
+		return tasksService.createTask({ title, description });
 	};
 
-	const getTasks = () => [...tasks];
-
-	const findTask = (params) => {
-		const task = tasks.find(task => task.id == params.id);
-		return task || { error: 'Task not found!' };
+	const deleteTask = (req) => {
+		const { id } = req.body;
+		if (!id) return { error: 'Must pass an id' };
+		return tasksService.deleteTask(id);
 	};
 
-	const createTask = async (task) => {
-		const { title, description } = task;
-		if (!title?.trim()) return { error: 'Title cannot be empty!' };
-		if (!description?.trim()) return { error: 'Description cannot be empty!' };
-
-		const newTask = { id: tasks.length + 1, ...task };
-		tasks.push(newTask);
-		await saveTasks();
-		return newTask;
-	};
-
-	const deleteTask = async (params) => {
-		const index = tasks.findIndex(task => task.id == params.id);
-		if (index === -1) return { error: 'Task not found!' };
-
-		tasks.splice(index, 1);
-		await saveTasks();
-		return { message: 'Task deleted successfully!' };
-	};
-
-	const updateTask = async (updated) => {
-		const { id, title, description } = updated;
+	const updateTask = (req) => {
+		const { id, title, description } = req.body;
 		if (!id) return { error: 'ID cannot be empty!' };
 		if (!title?.trim()) return { error: 'Title cannot be empty!' };
 		if (!description?.trim()) return { error: 'Description cannot be empty!' };
 
-		const task = tasks.find(task => task.id == id);
-		if (!task) return { error: 'Task not found!' };
-
-		task.title = title;
-		task.description = description;
-
-		await saveTasks();
-		return task;
+		return tasksService.updateTask({ id, title, description });
 	};
 
-	return { getTasks, init, findTask, createTask, deleteTask, updateTask };
+	return { getTasks, findTask, createTask, deleteTask, updateTask };
 })();

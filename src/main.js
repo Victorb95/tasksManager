@@ -1,32 +1,34 @@
 import 'dotenv/config';
 import express from 'express';
-import { loadTasks } from './utils.js'
 import { tasksManager } from './tasksManager.js'
 
 const PORT = process.env.PORT || 3000;
 const app = express();
 app.use(express.json());
 
-app.get('/', (_, res) => {
-	res.json(tasksManager.getTasks())
+app.get('/', async (req, res) => {
+	const resp = await tasksManager.getTasks(req);
+	res.json(resp);
 })
-app.get('/:id', (req, res) => {
-	res.json(tasksManager.findTask(req.params))
+app.get('/:id', async (req, res) => {
+	const resp = await tasksManager.findTask(req);
+	res.json(resp);
 })
-app.post('/create', (req, res) => {
-	res.json(tasksManager.createTask(req.body))
+app.post('/create', async (req, res) => {
+	const resp = await tasksManager.createTask(req);
+	res.json(resp);
 })
-app.post('/update', (req, res) => {
-	res.json(tasksManager.updateTask(req.body))
+app.post('/update', async (req, res) => {
+	const resp = await tasksManager.updateTask(req);
+	res.json(resp);
 })
-app.post('/delete', (req, res) => {
-	res.json(tasksManager.deleteTask(req.body))
+app.post('/delete', async (req, res) => {
+	const resp = await tasksManager.deleteTask(req);
+	res.json(resp);
 })
 
-tasksManager.init().then(() => {
-	app.listen(PORT, () => {
-		console.log(`App Running on PORT: ${PORT}`);
-	})
+app.listen(PORT, () => {
+	console.log(`App Running on PORT: ${PORT}`);
 })
 
 
