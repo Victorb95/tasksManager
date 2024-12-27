@@ -1,3 +1,4 @@
+import { log } from 'node:console';
 import { readFile, writeFile } from 'node:fs/promises';
 
 export const tasksManager = (() => {
@@ -26,8 +27,8 @@ export const tasksManager = (() => {
 
 	const getTasks = () => [...tasks];
 
-	const findTask = (taskId) => {
-		const task = tasks.find(task => task.id == taskId);
+	const findTask = (params) => {
+		const task = tasks.find(task => task.id == params.id);
 		return task || { error: 'Task not found!' };
 	};
 
@@ -42,8 +43,8 @@ export const tasksManager = (() => {
 		return newTask;
 	};
 
-	const deleteTask = async (taskId) => {
-		const index = tasks.findIndex(task => task.id == taskId);
+	const deleteTask = async (params) => {
+		const index = tasks.findIndex(task => task.id == params.id);
 		if (index === -1) return { error: 'Task not found!' };
 
 		tasks.splice(index, 1);

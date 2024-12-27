@@ -11,7 +11,7 @@ app.get('/', (_, res) => {
 	res.json(tasksManager.getTasks())
 })
 app.get('/:id', (req, res) => {
-	res.json(tasksManager.findTask(req.params.id))
+	res.json(tasksManager.findTask(req.params))
 })
 app.post('/create', (req, res) => {
 	res.json(tasksManager.createTask(req.body))
@@ -20,7 +20,7 @@ app.post('/update', (req, res) => {
 	res.json(tasksManager.updateTask(req.body))
 })
 app.post('/delete', (req, res) => {
-	res.json(tasksManager.deleteTask(req.body.id))
+	res.json(tasksManager.deleteTask(req.body))
 })
 
 tasksManager.init().then(() => {
